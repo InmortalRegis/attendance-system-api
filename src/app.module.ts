@@ -9,6 +9,7 @@ import { EmployeeController } from './employees/employee.controller';
 import { Log } from './logs-module/entities/log.entity';
 import { LogController } from './logs-module/log.controller';
 import { LogService } from './logs-module/log.services';
+import { LogGateway } from './logs-module/log.gateway';
 
 @Module({
   imports: [
@@ -16,6 +17,6 @@ import { LogService } from './logs-module/log.services';
     TypeOrmModule.forFeature([Employee, Log]),
   ],
   controllers: [AppController, EmployeeController, LogController],
-  providers: [AppService, EmployeeService, LogService],
+  providers: [AppService, EmployeeService, LogService, LogGateway],
 })
 export class AppModule {}

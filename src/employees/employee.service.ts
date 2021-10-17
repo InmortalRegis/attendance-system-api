@@ -16,10 +16,17 @@ export class EmployeeService {
     @InjectConnection() private connection: Connection,
   ) {}
 
-  findAll(): Promise<Employee[]> {
-    return this.employeeRepository.find({
-      relations: ['logs'],
-    });
+  async findAll(): Promise<Employee[]> {
+    const employees = await this.connection
+      .getRepository(Employee)
+      .createQueryBuilder('e')
+      .select('e.*')
+      .addSelect(
+        'COALESCE((SELECT l.`direction` FROM `log` as l WHERE `employeeId` = e.id ORDER BY l.`id` DESC LIMIT 1) * -1, 1)',
+        'nextDirection',
+      )
+      .getRawMany();
+    return employees;
   }
 
   getOneById(id: number): Promise<Employee> {

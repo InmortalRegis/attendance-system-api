@@ -6,17 +6,23 @@ import {
   NotFoundException,
   Post,
 } from '@nestjs/common';
+import { WebSocketServer } from '@nestjs/websockets';
 import { EmployeeService } from 'src/employees/employee.service';
 import { EntityNotFoundError } from 'typeorm';
 import { CreateLogDto } from './dto/create-log.dto';
 import { Log } from './entities/log.entity';
 import { LogService } from './log.services';
+import { Server } from 'socket.io';
+import { LogGateway } from './log.gateway';
 
 @Controller('logs')
 export class LogController {
+  @WebSocketServer()
+  server: Server;
   constructor(
     private readonly logService: LogService,
     private readonly employeeService: EmployeeService,
+    private readonly logGateway: LogGateway,
   ) {}
 
   @Get()
@@ -38,6 +44,8 @@ export class LogController {
         employee,
         employee.nextDirection,
       );
+      this.logGateway.logCreated(log);
+
       return log;
     } catch (error) {
       if (error instanceof EntityNotFoundError) {
