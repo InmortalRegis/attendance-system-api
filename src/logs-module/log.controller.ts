@@ -2,9 +2,9 @@ import {
   Body,
   Controller,
   Get,
+  HttpCode,
   NotFoundException,
   Post,
-  Req,
 } from '@nestjs/common';
 import { EmployeeService } from 'src/employees/employee.service';
 import { EntityNotFoundError } from 'typeorm';
@@ -25,7 +25,12 @@ export class LogController {
   }
 
   @Post()
+  @HttpCode(200)
   async createLog(@Body() createLogDto: CreateLogDto) {
+    console.log(
+      '🚀 ~ file: log.controller.ts ~ line 29 ~ LogController ~ createLog ~ createLogDto',
+      createLogDto,
+    );
     try {
       const employee = await this.employeeService.getOneByUid(createLogDto.uid);
 
@@ -36,6 +41,7 @@ export class LogController {
       return log;
     } catch (error) {
       if (error instanceof EntityNotFoundError) {
+        console.log('The employee doesnt exists.');
         throw new NotFoundException('The employee doesnt exists.');
       }
     }
